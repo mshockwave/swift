@@ -2498,7 +2498,7 @@ void IRGenDebugInfoImpl::emitVariableDeclaration(
         Builder, Piece, Var,
         // DW_OP_LLVM_fragment must be the last part of an DIExpr
         // so we can't append more if IsPiece is true.
-        Operands.empty() || IsPiece ? DIExpr : appendDIExpression(DIExpr),
+        IsPiece ? DIExpr : appendDIExpression(DIExpr),
         DInstLine, DInstLoc.column, Scope, DS,
         Indirection == CoroDirectValue || Indirection == CoroIndirectValue);
   }
