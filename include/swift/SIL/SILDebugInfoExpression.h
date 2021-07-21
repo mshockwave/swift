@@ -151,6 +151,15 @@ public:
     Elements.push_back(Element);
   }
 
+  void appendElements(llvm::ArrayRef<SILDIExprElement> NewElements) {
+    if (NewElements.size())
+      Elements.append(NewElements.begin(), NewElements.end());
+  }
+
+  void append(const SILDebugInfoExpression &Tail) {
+    appendElements(Tail.Elements);
+  }
+
   /// The iterator for SILDIExprOperand
   class op_iterator {
     friend class SILDebugInfoExpression;
@@ -208,6 +217,9 @@ public:
 
   /// Return true if this expression is not empty
   inline operator bool() const { return Elements.size(); }
+
+  /// Create a op_fragment expression
+  static SILDebugInfoExpression createFragment(VarDecl *Field);
 };
 } // end namespace swift
 #endif

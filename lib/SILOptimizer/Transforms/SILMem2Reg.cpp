@@ -1057,9 +1057,21 @@ bool MemoryToRegisters::promoteSingleAllocation(AllocStackInst *alloc) {
 
   // Remove write-only AllocStacks.
   if (isWriteOnlyAllocation(alloc)) {
-    deleter.forceDeleteWithUsers(alloc);
+    if (auto VarInfo = alloc->getVarInfo())
+      for (auto *U : alloc->getUses()) {
+        SILInstruction *Usr = U->getUser();
+        if (auto *SI = dyn_cast<StoreInst>(Usr)) {
+          // Generate a debug_value here
+          SILBuilderWithScope::insertAfter(
+            SI,[&](SILBuilder &SB) {
+              SB.createDebugValue(SI->getLoc(), SI->getSrc(),
+                                  *VarInfo);
+            });
+        }
+      }
 
     LLVM_DEBUG(llvm::dbgs() << "*** Deleting store-only AllocStack: "<< *alloc);
+    deleter.forceDeleteWithUsers(alloc);
     return true;
   }
 

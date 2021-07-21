@@ -1731,6 +1731,15 @@ struct SILDebugVariable {
   const SILDebugScope *Scope;
   SILDebugInfoExpression DIExpr;
 
+  // Use vanilla copy ctor / operator
+  SILDebugVariable(const SILDebugVariable &) = default;
+  SILDebugVariable &operator=(const SILDebugVariable &) = default;
+
+  /// copy everything except the DIExpr
+  SILDebugVariable copyVariable() {
+    return SILDebugVariable(Name, Constant, ArgNo, Type, Loc, Scope);
+  }
+
   SILDebugVariable() : ArgNo(0), Constant(false), Scope(nullptr) {}
   SILDebugVariable(bool Constant, uint16_t ArgNo)
       : ArgNo(ArgNo), Constant(Constant), Scope(nullptr) {}
